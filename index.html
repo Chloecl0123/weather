@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>天气预报 · 知雨</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
     * {
       margin: 0;
       padding: 0;
@@ -12,160 +14,301 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+      background: #1a1a2e;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 12px;
+      padding: 16px;
       margin: 0;
-      color: #fff;
+      color: #f5e6d3;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, #0c2d6b 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, #1a3a7a 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, #2d1b4e 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 70%, #1b3d5c 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 60%, #2a1a3f 0%, transparent 45%),
+        linear-gradient(180deg, #0a1628 0%, #0d1b3e 30%, #1a1035 60%, #0d1520 100%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 25% 30%, rgba(255, 200, 50, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 75% 25%, rgba(255, 180, 80, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 40% 60%, rgba(180, 160, 220, 0.04) 0%, transparent 35%),
+        radial-gradient(circle at 60% 70%, rgba(100, 150, 200, 0.05) 0%, transparent 30%),
+        repeating-conic-gradient(rgba(255, 215, 100, 0.02) 0% 1%, transparent 1% 3%);
+      animation: starrySwirl 60s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes starrySwirl {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffe9a0;
+      border-radius: 50%;
+      animation: twinkle var(--duration) ease-in-out infinite;
+      animation-delay: var(--delay);
+      box-shadow: 0 0 6px 2px rgba(255, 233, 160, 0.4);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
     }
 
     .app-container {
       width: 100%;
-      max-width: 420px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: 44px;
-      padding: 20px 16px 30px;
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 440px;
+      background: rgba(20, 15, 35, 0.55);
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      border-radius: 36px;
+      padding: 24px 20px 30px;
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 0 100px rgba(100, 130, 200, 0.1);
+      border: 1px solid rgba(180, 160, 120, 0.25);
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: -20%; left: -30%;
+      width: 160%; height: 160%;
+      background: radial-gradient(ellipse at 30% 20%, rgba(255, 180, 50, 0.04) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 70%, rgba(130, 100, 180, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+      border-radius: 36px;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 6px;
+      padding: 0 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .location {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 20px;
-      font-weight: 600;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #e8d5b0;
     }
 
     .refresh-btn {
-      background: rgba(255, 255, 255, 0.15);
-      border: none;
-      color: white;
-      font-size: 20px;
-      width: 44px;
-      height: 44px;
+      background: rgba(180, 150, 100, 0.15);
+      border: 1px solid rgba(180, 150, 100, 0.3);
+      color: #d4b896;
+      font-size: 18px;
+      width: 42px; height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: 0.2s;
-      border: 0.5px solid rgba(255,255,255,0.25);
-      font-weight: bold;
+      transition: all 0.4s ease;
     }
 
     .refresh-btn:active {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(0.94);
+      transform: rotate(180deg) scale(0.9);
+      transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1.2);
     }
 
     .current-weather {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 8px 0;
+      margin: 4px 0;
+      position: relative;
+      z-index: 1;
     }
 
     .temp-big {
-      font-size: 76px;
-      font-weight: 300;
+      font-size: 80px;
+      font-weight: 400;
       line-height: 1;
+      background: linear-gradient(180deg, #f5e6d3 0%, #d4b896 60%, #b8956e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 15px rgba(200, 150, 80, 0.3));
     }
 
     .weather-emoji {
-      font-size: 48px;
-      margin: 8px 0;
+      font-size: 50px;
+      margin: 2px 0;
+      filter: drop-shadow(0 4px 12px rgba(255, 200, 100, 0.4));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
     }
 
     .condition-text {
-      font-size: 20px;
-      font-weight: 500;
-      opacity: 0.9;
+      font-size: 18px;
+      font-weight: 400;
+      opacity: 0.85;
+      color: #c9b896;
+      letter-spacing: 2px;
     }
 
-    /* 新的天气对比卡片 */
+    /* 实用信息卡片 */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tips-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    .tip-card {
+      background: rgba(25, 18, 35, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid rgba(140, 120, 80, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tip-icon {
+      font-size: 26px;
+    }
+
+    .tip-label {
+      font-size: 10px;
+      color: #a09070;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .tip-value {
+      font-size: 15px;
+      font-weight: 400;
+      color: #d4b896;
+      line-height: 1.4;
+    }
+
     .compare-cards {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 4px;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
     }
 
     .compare-item {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(30, 20, 40, 0.4);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       border-radius: 24px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 14px;
+      border: 1px solid rgba(160, 140, 100, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .compare-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 400;
+      color: #a89878;
+      letter-spacing: 1px;
+      text-align: center;
     }
 
     .compare-days {
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .day-card {
       flex: 1;
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(15, 10, 25, 0.5);
       border-radius: 16px;
-      padding: 12px;
+      padding: 10px 8px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 5px;
+      border: 1px solid rgba(140, 120, 80, 0.2);
     }
 
     .day-label {
-      font-size: 12px;
-      opacity: 0.7;
-      font-weight: 500;
+      font-size: 10px;
+      opacity: 0.6;
+      color: #a09070;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .day-emoji {
-      font-size: 32px;
-      margin: 4px 0;
+      font-size: 28px;
+      margin: 1px 0;
     }
 
     .day-condition {
-      font-size: 13px;
-      font-weight: 500;
-      background: rgba(255,255,255,0.15);
-      padding: 4px 10px;
-      border-radius: 12px;
+      font-size: 11px;
+      color: #c4a878;
+      background: rgba(180, 150, 100, 0.1);
+      padding: 2px 10px;
+      border-radius: 20px;
       display: inline-block;
       margin: 0 auto;
     }
 
     .day-temps {
-      font-size: 13px;
+      font-size: 11px;
       display: flex;
       justify-content: center;
       gap: 8px;
@@ -173,566 +316,516 @@
 
     .temp-high {
       font-weight: 700;
-      font-size: 16px;
+      font-size: 14px;
+      color: #e8c89e;
     }
 
     .temp-low {
-      opacity: 0.6;
-      font-size: 14px;
+      opacity: 0.5;
+      font-size: 12px;
+      color: #a09070;
     }
 
     .compare-verdict {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 400;
+      padding: 5px 12px;
       border-radius: 20px;
-      background: rgba(0,0,0,0.3);
       text-align: center;
+      letter-spacing: 1px;
+      background: rgba(20, 15, 30, 0.5);
     }
 
-    .warmer { 
-      background: rgba(255, 179, 71, 0.2);
-      color: #ffb347;
-    }
-    .colder { 
-      background: rgba(116, 185, 255, 0.2);
-      color: #74b9ff;
-    }
-    .similar { 
-      background: rgba(255, 255, 255, 0.1);
-      color: #dfe6e9;
-    }
+    .warmer { color: #e8a850; background: rgba(200, 140, 60, 0.15); }
+    .colder { color: #8899cc; background: rgba(120, 140, 200, 0.15); }
+    .similar { color: #a89878; background: rgba(180, 160, 120, 0.1); }
 
-    /* 详细信息区域 */
     .detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .detail-item {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(25, 18, 35, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 18px;
       padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      border: 1px solid rgba(255,255,255,0.15);
+      gap: 5px;
+      border: 1px solid rgba(140, 120, 80, 0.2);
     }
 
-    .detail-icon {
-      font-size: 22px;
-    }
-
-    .detail-label {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    .detail-value {
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .detail-icon { font-size: 22px; }
+    .detail-label { font-size: 10px; color: #a09070; letter-spacing: 2px; text-transform: uppercase; }
+    .detail-value { font-size: 18px; font-weight: 400; color: #d4b896; }
 
     .section-title {
-      font-weight: 600;
-      font-size: 16px;
-      margin: 4px 0 0 4px;
+      font-weight: 400;
+      font-size: 14px;
+      color: #a89878;
+      letter-spacing: 2px;
+      padding: 0 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .hourly-scroll {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       overflow-x: auto;
-      padding: 10px 4px 14px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 20px;
+      padding: 12px 6px 16px;
+      background: rgba(15, 10, 25, 0.35);
+      border-radius: 22px;
       backdrop-filter: blur(10px);
       scrollbar-width: none;
+      border: 1px solid rgba(140, 120, 80, 0.15);
+      position: relative;
+      z-index: 1;
     }
 
-    .hourly-scroll::-webkit-scrollbar {
-      display: none;
-    }
+    .hourly-scroll::-webkit-scrollbar { display: none; }
 
     .hourly-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
-      min-width: 60px;
-      font-size: 14px;
-      font-weight: 500;
+      gap: 6px;
+      min-width: 52px;
+      font-size: 12px;
+      color: #c4a878;
     }
 
-    .hourly-item .emoji {
-      font-size: 24px;
-    }
+    .hourly-item .emoji { font-size: 20px; }
 
     .info-row {
       display: flex;
       justify-content: space-between;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(8px);
+      background: rgba(25, 18, 35, 0.4);
+      backdrop-filter: blur(10px);
       border-radius: 22px;
       padding: 14px 16px;
-      font-size: 15px;
-      border: 1px solid rgba(255,255,255,0.15);
+      font-size: 13px;
+      color: #a89878;
+      border: 1px solid rgba(140, 120, 80, 0.15);
+      position: relative;
+      z-index: 1;
     }
 
     .forecast-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 300px;
+      gap: 8px;
+      max-height: 220px;
       overflow-y: auto;
-      padding-right: 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .forecast-day {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255,255,255,0.07);
-      border-radius: 18px;
-      padding: 12px 14px;
+      background: rgba(25, 18, 35, 0.35);
+      border-radius: 16px;
+      padding: 11px 14px;
       backdrop-filter: blur(8px);
-      font-size: 15px;
+      font-size: 13px;
+      border: 1px solid rgba(140, 120, 80, 0.12);
     }
 
-    .last-year-note {
-      background: rgba(255,255,255,0.1);
-      border-radius: 18px;
-      padding: 12px 16px;
-      text-align: center;
-      font-size: 15px;
-      backdrop-filter: blur(10px);
-      border: 1px dashed rgba(255,255,255,0.3);
-    }
+    .forecast-day strong { color: #d4b896; font-weight: 400; }
+    .forecast-day small { color: #a09070; opacity: 0.6; }
 
     .footer-note {
       text-align: center;
-      font-size: 12px;
-      opacity: 0.5;
-      margin-top: 4px;
+      font-size: 10px;
+      opacity: 0.4;
+      color: #a09070;
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 1;
     }
 
-    .loading {
-      opacity: 0.6;
-    }
+    .forecast-list::-webkit-scrollbar { width: 2px; }
+    .forecast-list::-webkit-scrollbar-track { background: transparent; }
+    .forecast-list::-webkit-scrollbar-thumb { background: rgba(180, 150, 100, 0.2); border-radius: 10px; }
   </style>
 </head>
 <body>
-<div class="app-container">
-  <div class="header">
-    <div class="location">
-      <span>📍</span>
-      <span id="cityName">北京</span>
-    </div>
-    <button class="refresh-btn" id="refreshBtn">↻</button>
-  </div>
+  <div class="stars" id="starsContainer"></div>
 
-  <div class="current-weather">
-    <div class="temp-big" id="currentTemp">--°</div>
-    <div class="weather-emoji" id="weatherEmoji">☁️</div>
-    <div class="condition-text" id="conditionText">加载中...</div>
-  </div>
-
-  <!-- 天气对比区域 -->
-  <div class="compare-cards">
-    <!-- 昨天 vs 今天 -->
-    <div class="compare-item" id="compareYesterday">
-      <div class="compare-header">
-        <span>📆 昨天 vs 今天</span>
+  <div class="app-container">
+    <div class="header">
+      <div class="location">
+        <span>✦</span>
+        <span id="cityName">合肥庐阳区</span>
       </div>
-      <div class="compare-days">
-        <div class="day-card">
-          <div class="day-label">昨天</div>
-          <div class="day-emoji" id="yesterdayEmoji">☁️</div>
-          <div class="day-condition" id="yesterdayCondition">--</div>
-          <div class="day-temps">
-            <span class="temp-high" id="yesterdayHigh">--°</span>
-            <span class="temp-low" id="yesterdayLow">--°</span>
+      <button class="refresh-btn" id="refreshBtn">↻</button>
+    </div>
+
+    <div class="current-weather">
+      <div class="temp-big" id="currentTemp">--°</div>
+      <div class="weather-emoji" id="weatherEmoji">☁️</div>
+      <div class="condition-text" id="conditionText">加载中...</div>
+    </div>
+
+    <!-- ✨ 新增：实用信息卡片 -->
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">👔</div>
+        <div class="tip-label">穿 衣 建 议</div>
+        <div class="tip-value" id="clothingAdvice">--</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌧️</div>
+        <div class="tip-label">降 雨 概 率</div>
+        <div class="tip-value" id="rainChance">--</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌡️</div>
+        <div class="tip-label">昼 夜 温 差</div>
+        <div class="tip-value" id="tempDiff">--</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌙</div>
+        <div class="tip-label">月 相</div>
+        <div class="tip-value" id="moonPhase">--</div>
+      </div>
+    </div>
+
+    <!-- 空气质量 -->
+    <div class="tips-grid full">
+      <div class="tip-card">
+        <div class="tip-icon">🍃</div>
+        <div class="tip-label">空 气 质 量</div>
+        <div class="tip-value" id="airQuality">--</div>
+      </div>
+    </div>
+
+    <div class="compare-cards">
+      <div class="compare-item">
+        <div class="compare-header">✧ 昨 日 与 今 朝 ✧</div>
+        <div class="compare-days">
+          <div class="day-card">
+            <div class="day-label">昨日</div>
+            <div class="day-emoji" id="yesterdayEmoji">☁️</div>
+            <div class="day-condition" id="yesterdayCondition">--</div>
+            <div class="day-temps">
+              <span class="temp-high" id="yesterdayHigh">--°</span>
+              <span class="temp-low" id="yesterdayLow">--°</span>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-label">今日</div>
+            <div class="day-emoji" id="todayEmoji1">☁️</div>
+            <div class="day-condition" id="todayCondition1">--</div>
+            <div class="day-temps">
+              <span class="temp-high" id="todayHigh1">--°</span>
+              <span class="temp-low" id="todayLow1">--°</span>
+            </div>
           </div>
         </div>
-        <div class="day-card">
-          <div class="day-label">今天</div>
-          <div class="day-emoji" id="todayEmoji1">☁️</div>
-          <div class="day-condition" id="todayCondition1">--</div>
-          <div class="day-temps">
-            <span class="temp-high" id="todayHigh1">--°</span>
-            <span class="temp-low" id="todayLow1">--°</span>
+        <div class="compare-verdict" id="yesterdayVerdict">比较中...</div>
+      </div>
+
+      <div class="compare-item">
+        <div class="compare-header">✧ 今 日 与 明 朝 ✧</div>
+        <div class="compare-days">
+          <div class="day-card">
+            <div class="day-label">今日</div>
+            <div class="day-emoji" id="todayEmoji2">☁️</div>
+            <div class="day-condition" id="todayCondition2">--</div>
+            <div class="day-temps">
+              <span class="temp-high" id="todayHigh2">--°</span>
+              <span class="temp-low" id="todayLow2">--°</span>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-label">明日</div>
+            <div class="day-emoji" id="tomorrowEmoji">☁️</div>
+            <div class="day-condition" id="tomorrowCondition">--</div>
+            <div class="day-temps">
+              <span class="temp-high" id="tomorrowHigh">--°</span>
+              <span class="temp-low" id="tomorrowLow">--°</span>
+            </div>
           </div>
         </div>
+        <div class="compare-verdict" id="tomorrowVerdict">比较中...</div>
       </div>
-      <div class="compare-verdict" id="yesterdayVerdict">比较中...</div>
     </div>
 
-    <!-- 今天 vs 明天 -->
-    <div class="compare-item" id="compareTomorrow">
-      <div class="compare-header">
-        <span>🔮 今天 vs 明天</span>
+    <div class="section-title">✦ 今 日 详 情</div>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-icon">🌡️</div>
+        <div class="detail-label">体感温度</div>
+        <div class="detail-value" id="feelsLike">--°</div>
       </div>
-      <div class="compare-days">
-        <div class="day-card">
-          <div class="day-label">今天</div>
-          <div class="day-emoji" id="todayEmoji2">☁️</div>
-          <div class="day-condition" id="todayCondition2">--</div>
-          <div class="day-temps">
-            <span class="temp-high" id="todayHigh2">--°</span>
-            <span class="temp-low" id="todayLow2">--°</span>
-          </div>
-        </div>
-        <div class="day-card">
-          <div class="day-label">明天</div>
-          <div class="day-emoji" id="tomorrowEmoji">☁️</div>
-          <div class="day-condition" id="tomorrowCondition">--</div>
-          <div class="day-temps">
-            <span class="temp-high" id="tomorrowHigh">--°</span>
-            <span class="temp-low" id="tomorrowLow">--°</span>
-          </div>
-        </div>
+      <div class="detail-item">
+        <div class="detail-icon">💧</div>
+        <div class="detail-label">湿度</div>
+        <div class="detail-value" id="humidity">--%</div>
       </div>
-      <div class="compare-verdict" id="tomorrowVerdict">比较中...</div>
+      <div class="detail-item">
+        <div class="detail-icon">💨</div>
+        <div class="detail-label">风况</div>
+        <div class="detail-value" id="windInfo">--</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-icon">☀️</div>
+        <div class="detail-label">紫外线</div>
+        <div class="detail-value" id="uvIndex">--</div>
+      </div>
+    </div>
+
+    <div class="section-title">✦ 逐 时</div>
+    <div class="hourly-scroll" id="hourlyContainer"></div>
+
+    <div class="info-row">
+      <div>🌅 日出 <span id="sunriseTime">--:--</span></div>
+      <div>🌇 日落 <span id="sunsetTime">--:--</span></div>
+      <div>🌾 <span id="nextFestival">节气</span></div>
+    </div>
+
+    <div class="section-title">✦ 未 来</div>
+    <div class="forecast-list" id="forecastList"></div>
+
+    <div class="footer-note">
+      数据来源 Open-Meteo · 免费天气API
     </div>
   </div>
 
-  <!-- 详细信息：体感温度、湿度、风况、紫外线 -->
-  <div class="section-title">📊 今日详情</div>
-  <div class="detail-grid">
-    <div class="detail-item">
-      <div class="detail-icon">🌡️</div>
-      <div class="detail-label">体感温度</div>
-      <div class="detail-value" id="feelsLike">--°</div>
-    </div>
-    <div class="detail-item">
-      <div class="detail-icon">💧</div>
-      <div class="detail-label">湿度</div>
-      <div class="detail-value" id="humidity">--%</div>
-    </div>
-    <div class="detail-item">
-      <div class="detail-icon">💨</div>
-      <div class="detail-label">风况</div>
-      <div class="detail-value" id="windInfo">--</div>
-    </div>
-    <div class="detail-item">
-      <div class="detail-icon">☀️</div>
-      <div class="detail-label">紫外线</div>
-      <div class="detail-value" id="uvIndex">--</div>
-    </div>
-  </div>
-
-  <div class="section-title">⏱️ 每小时预报</div>
-  <div class="hourly-scroll" id="hourlyContainer"></div>
-
-  <div class="info-row">
-    <div>🌅 日出 <span id="sunriseTime">--:--</span></div>
-    <div>🌇 日落 <span id="sunsetTime">--:--</span></div>
-    <div>🌾 <span id="nextFestival">节气加载</span></div>
-  </div>
-
-  <div class="section-title">📅 未来15天</div>
-  <div class="forecast-list" id="forecastList"></div>
-
-  <div class="last-year-note" id="lastYearWeather">
-    🕰️ 去年今天: 加载中...
-  </div>
-
-  <div class="footer-note">
-    数据来源 Open-Meteo · 完全免费
-  </div>
-</div>
-
-<script>
-  // ========== 配置 ==========
-  const LATITUDE = 31.8786;
-  const LONGITUDE = 117.2647;
-  const CITY_NAME = '合肥庐阳区';
-  
-  // 天气代码转emoji
-  function getWeatherEmoji(code) {
-    const map = {
-      0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
-      45: '🌫️', 48: '🌫️',
-      51: '🌦️', 53: '🌦️', 55: '🌧️',
-      61: '🌧️', 63: '🌧️', 65: '🌧️',
-      71: '❄️', 73: '❄️', 75: '❄️',
-      80: '🌦️', 81: '🌧️', 82: '⛈️',
-      95: '⛈️', 96: '⛈️', 99: '⛈️'
-    };
-    return map[code] || '🌡️';
-  }
-
-  function getWeatherText(code) {
-    const map = {
-      0: '晴天', 1: '大部晴', 2: '多云', 3: '阴天',
-      45: '雾', 48: '雾凇',
-      51: '小雨', 53: '小雨', 55: '小雨',
-      61: '中雨', 63: '中雨', 65: '大雨',
-      71: '小雪', 73: '中雪', 75: '大雪',
-      80: '阵雨', 81: '阵雨', 82: '暴雨',
-      95: '雷暴', 96: '冰雹', 99: '雷暴'
-    };
-    return map[code] || '未知';
-  }
-
-  // 风力等级描述
-  function getWindDescription(speed) {
-    if (speed < 1) return '无风';
-    if (speed < 5) return '微风';
-    if (speed < 11) return '轻风';
-    if (speed < 19) return '和风';
-    if (speed < 28) return '劲风';
-    if (speed < 38) return '强风';
-    return '大风';
-  }
-
-  // 紫外线等级描述
-  function getUVDescription(index) {
-    if (index <= 2) return '低';
-    if (index <= 5) return '中等';
-    if (index <= 7) return '高';
-    if (index <= 10) return '很高';
-    return '极高';
-  }
-
-  // 计算体感温度 (简化版)
-  function calculateFeelsLike(temp, humidity, windSpeed) {
-    // 简化计算：湿度影响
-    if (temp > 25 && humidity > 50) {
-      return Math.round(temp + (humidity - 50) / 10);
-    }
-    // 风寒效应
-    if (temp < 10 && windSpeed > 5) {
-      return Math.round(temp - windSpeed / 5);
-    }
-    return temp;
-  }
-
-  // 节气计算
-  function getNextSolarTerm(date) {
-    const year = date.getFullYear();
-    const terms = [
-      { name: '小寒', month: 0, day: 5 }, { name: '大寒', month: 0, day: 20 },
-      { name: '立春', month: 1, day: 4 }, { name: '雨水', month: 1, day: 19 },
-      { name: '惊蛰', month: 2, day: 6 }, { name: '春分', month: 2, day: 21 },
-      { name: '清明', month: 3, day: 5 }, { name: '谷雨', month: 3, day: 20 },
-      { name: '立夏', month: 4, day: 6 }, { name: '小满', month: 4, day: 21 },
-      { name: '芒种', month: 5, day: 6 }, { name: '夏至', month: 5, day: 21 },
-      { name: '小暑', month: 6, day: 7 }, { name: '大暑', month: 6, day: 23 },
-      { name: '立秋', month: 7, day: 8 }, { name: '处暑', month: 7, day: 23 },
-      { name: '白露', month: 8, day: 8 }, { name: '秋分', month: 8, day: 23 },
-      { name: '寒露', month: 9, day: 8 }, { name: '霜降', month: 9, day: 24 },
-      { name: '立冬', month: 10, day: 8 }, { name: '小雪', month: 10, day: 22 },
-      { name: '大雪', month: 11, day: 7 }, { name: '冬至', month: 11, day: 22 }
-    ];
-
-    const today = new Date(year, date.getMonth(), date.getDate());
-    let nextTerm = terms[0].name;
-    let minDiff = Infinity;
-
-    for (const term of terms) {
-      const termDate = new Date(year, term.month, term.day);
-      let diff = termDate - today;
-      if (diff < 0) {
-        diff = new Date(year + 1, term.month, term.day) - today;
-      }
-      if (diff >= 0 && diff < minDiff) {
-        minDiff = diff;
-        nextTerm = term.name;
+  <script>
+    // 星空
+    function createStars() {
+      const container = document.getElementById('starsContainer');
+      for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--duration:${Math.random()*3+2}s;--delay:${Math.random()*5}s`;
+        container.appendChild(star);
       }
     }
-    return nextTerm;
-  }
+    createStars();
 
-  function getLastYearDate() {
-    const now = new Date();
-    const lastYear = new Date(now);
-    lastYear.setFullYear(lastYear.getFullYear() - 1);
-    return lastYear.toISOString().split('T')[0];
-  }
+    // ========== 配置 ==========
+    const LATITUDE = 31.8786;
+    const LONGITUDE = 117.2647;
+    const CITY_NAME = '合肥庐阳区';
 
-  async function fetchWeather() {
-    try {
-      document.getElementById('cityName').textContent = CITY_NAME;
-      
-      // 扩展API请求，加入风况和紫外线
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature,uv_index&hourly=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max,wind_speed_10m_max&timezone=Asia/Shanghai&past_days=1&forecast_days=16`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-
-      // 当前天气
-      const currentTemp = Math.round(data.current.temperature_2m);
-      const currentCode = data.current.weather_code;
-      const currentHumidity = data.current.relative_humidity_2m;
-      const currentWindSpeed = data.current.wind_speed_10m;
-      const currentFeelsLike = Math.round(data.current.apparent_temperature || currentTemp);
-      const currentUV = data.current.uv_index || 0;
-      
-      document.getElementById('currentTemp').textContent = `${currentTemp}°`;
-      document.getElementById('weatherEmoji').textContent = getWeatherEmoji(currentCode);
-      document.getElementById('conditionText').textContent = getWeatherText(currentCode);
-
-      // 详细信息
-      document.getElementById('feelsLike').textContent = `${currentFeelsLike}°`;
-      document.getElementById('humidity').textContent = `${currentHumidity}%`;
-      document.getElementById('windInfo').textContent = getWindDescription(currentWindSpeed);
-      document.getElementById('uvIndex').textContent = getUVDescription(currentUV);
-
-      // 日出日落
-      const todaySunrise = data.daily.sunrise[1];
-      const todaySunset = data.daily.sunset[1];
-      document.getElementById('sunriseTime').textContent = todaySunrise?.split('T')[1]?.substring(0,5) || '--:--';
-      document.getElementById('sunsetTime').textContent = todaySunset?.split('T')[1]?.substring(0,5) || '--:--';
-
-      // ===== 天气对比 =====
-      const yesterdayMax = Math.round(data.daily.temperature_2m_max[0]);
-      const yesterdayMin = Math.round(data.daily.temperature_2m_min[0]);
-      const yesterdayCode = data.daily.weather_code[0];
-      
-      const todayMax = Math.round(data.daily.temperature_2m_max[1]);
-      const todayMin = Math.round(data.daily.temperature_2m_min[1]);
-      const todayCode = data.daily.weather_code[1];
-      
-      const tomorrowMax = Math.round(data.daily.temperature_2m_max[2]);
-      const tomorrowMin = Math.round(data.daily.temperature_2m_min[2]);
-      const tomorrowCode = data.daily.weather_code[2];
-
-      // 昨天 vs 今天
-      document.getElementById('yesterdayEmoji').textContent = getWeatherEmoji(yesterdayCode);
-      document.getElementById('yesterdayCondition').textContent = getWeatherText(yesterdayCode);
-      document.getElementById('yesterdayHigh').textContent = `${yesterdayMax}°`;
-      document.getElementById('yesterdayLow').textContent = `${yesterdayMin}°`;
-      
-      document.getElementById('todayEmoji1').textContent = getWeatherEmoji(todayCode);
-      document.getElementById('todayCondition1').textContent = getWeatherText(todayCode);
-      document.getElementById('todayHigh1').textContent = `${todayMax}°`;
-      document.getElementById('todayLow1').textContent = `${todayMin}°`;
-      
-      document.getElementById('todayEmoji2').textContent = getWeatherEmoji(todayCode);
-      document.getElementById('todayCondition2').textContent = getWeatherText(todayCode);
-      document.getElementById('todayHigh2').textContent = `${todayMax}°`;
-      document.getElementById('todayLow2').textContent = `${todayMin}°`;
-      
-      document.getElementById('tomorrowEmoji').textContent = getWeatherEmoji(tomorrowCode);
-      document.getElementById('tomorrowCondition').textContent = getWeatherText(tomorrowCode);
-      document.getElementById('tomorrowHigh').textContent = `${tomorrowMax}°`;
-      document.getElementById('tomorrowLow').textContent = `${tomorrowMin}°`;
-
-      // 对比结论
-      const yesterdayVerdict = document.getElementById('yesterdayVerdict');
-      const diff1 = todayMax - yesterdayMax;
-      if (diff1 >= 2) {
-        yesterdayVerdict.textContent = `📈 今天比昨天热 ${Math.abs(diff1)}°`;
-        yesterdayVerdict.className = 'compare-verdict warmer';
-      } else if (diff1 <= -2) {
-        yesterdayVerdict.textContent = `📉 今天比昨天冷 ${Math.abs(diff1)}°`;
-        yesterdayVerdict.className = 'compare-verdict colder';
-      } else {
-        yesterdayVerdict.textContent = '🌡️ 今天和昨天温度相近';
-        yesterdayVerdict.className = 'compare-verdict similar';
-      }
-
-      const tomorrowVerdict = document.getElementById('tomorrowVerdict');
-      const diff2 = tomorrowMax - todayMax;
-      if (diff2 >= 2) {
-        tomorrowVerdict.textContent = `🔥 明天比今天热 ${Math.abs(diff2)}°`;
-        tomorrowVerdict.className = 'compare-verdict warmer';
-      } else if (diff2 <= -2) {
-        tomorrowVerdict.textContent = `❄️ 明天比今天冷 ${Math.abs(diff2)}°`;
-        tomorrowVerdict.className = 'compare-verdict colder';
-      } else {
-        tomorrowVerdict.textContent = '✨ 明天和今天温度相似';
-        tomorrowVerdict.className = 'compare-verdict similar';
-      }
-
-      // 每小时预报
-      const hourlyContainer = document.getElementById('hourlyContainer');
-      let hourlyHTML = '';
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      const hourlyTimes = data.hourly.time;
-      const hourlyTemps = data.hourly.temperature_2m;
-      const hourlyCodes = data.hourly.weather_code;
-      
-      const startIndex = hourlyTimes.findIndex(t => {
-        const d = new Date(t);
-        return d.getHours() === currentHour && d.getDate() === now.getDate();
-      });
-      
-      const showHours = startIndex >= 0 ? hourlyTimes.slice(startIndex, startIndex + 24) : hourlyTimes.slice(0, 24);
-      const showTemps = startIndex >= 0 ? hourlyTemps.slice(startIndex, startIndex + 24) : hourlyTemps.slice(0, 24);
-      const showCodes = startIndex >= 0 ? hourlyCodes.slice(startIndex, startIndex + 24) : hourlyCodes.slice(0, 24);
-
-      for (let i = 0; i < Math.min(showHours.length, 24); i++) {
-        const time = new Date(showHours[i]);
-        const hour = String(time.getHours()).padStart(2, '0') + ':00';
-        const temp = Math.round(showTemps[i]);
-        const emoji = getWeatherEmoji(showCodes[i]);
-        hourlyHTML += `
-          <div class="hourly-item">
-            <span>${hour}</span>
-            <span class="emoji">${emoji}</span>
-            <span>${temp}°</span>
-          </div>
-        `;
-      }
-      hourlyContainer.innerHTML = hourlyHTML;
-
-      // 未来15天
-      const forecastContainer = document.getElementById('forecastList');
-      let forecastHTML = '';
-      const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-      
-      for (let i = 1; i < Math.min(data.daily.time.length, 16); i++) {
-        const date = new Date(data.daily.time[i]);
-        const dayName = i === 1 ? '今天' : i === 2 ? '明天' : weekDays[date.getDay()];
-        const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-        const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
-        const minTemp = Math.round(data.daily.temperature_2m_min[i]);
-        const emoji = getWeatherEmoji(data.daily.weather_code[i]);
-        
-        forecastHTML += `
-          <div class="forecast-day">
-            <span><strong>${dayName}</strong> <small>${dateStr}</small></span>
-            <span style="font-size:24px;">${emoji}</span>
-            <span>${maxTemp}° <small style="opacity:0.6">${minTemp}°</small></span>
-          </div>
-        `;
-      }
-      forecastContainer.innerHTML = forecastHTML;
-
-      // 节气
-      document.getElementById('nextFestival').textContent = '最近节气: ' + getNextSolarTerm(new Date());
-
-      // 去年今天
-      const lastYearDate = getLastYearDate();
-      const fakeTemp = Math.round(currentTemp + (Math.random() * 6 - 3));
-      const fakeConditions = ['晴天', '多云', '阴天', '小雨', '微风'];
-      const fakeCond = fakeConditions[Math.floor(Math.random() * fakeConditions.length)];
-      document.getElementById('lastYearWeather').textContent = 
-        `🕰️ 去年今天 (${lastYearDate}): ${fakeCond} ${fakeTemp}°C`;
-
-    } catch (error) {
-      console.error('获取天气失败:', error);
-      document.getElementById('conditionText').textContent = '获取失败，请检查网络';
+    function getWeatherEmoji(code) {
+      const map = {
+        0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
+        51:'🌦️',53:'🌦️',55:'🌧️',56:'🌧️',57:'🌧️',
+        61:'🌧️',63:'🌧️',65:'🌧️',66:'🌧️',67:'🌧️',
+        71:'❄️',73:'❄️',75:'❄️',77:'❄️',
+        80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'🌨️',
+        95:'⛈️',96:'⛈️',99:'⛈️'
+      };
+      return map[code]||'🌡️';
     }
-  }
 
-  document.getElementById('refreshBtn').addEventListener('click', fetchWeather);
-  
-  fetchWeather();
-  
-  setInterval(fetchWeather, 30 * 60 * 1000);
-</script>
+    function getWeatherText(code) {
+      const map = {
+        0:'晴',1:'大部晴',2:'少云',3:'多云',45:'雾',48:'雾凇',
+        51:'毛毛雨',53:'毛毛雨',55:'毛毛雨',56:'冻雨',57:'冻雨',
+        61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',
+        71:'小雪',73:'中雪',75:'大雪',77:'雪粒',
+        80:'阵雨',81:'中阵雨',82:'大阵雨',85:'小阵雪',86:'大阵雪',
+        95:'雷暴',96:'冰雹',99:'雷暴'
+      };
+      return map[code]||'未知';
+    }
+
+    function getWindDirection(d) {
+      const dirs=['北','东北','东','东南','南','西南','西','西北'];
+      return dirs[Math.round(((d+22.5)%360)/45)%8];
+    }
+
+    function getWindLevel(s) {
+      const sp=s/3.6;
+      if(sp<0.3)return 0;if(sp<1.6)return 1;if(sp<3.4)return 2;
+      if(sp<5.5)return 3;if(sp<8.0)return 4;if(sp<10.8)return 5;
+      if(sp<13.9)return 6;if(sp<17.2)return 7;if(sp<20.8)return 8;
+      return 9;
+    }
+
+    function getUVDesc(i) {
+      if(i<=2)return'弱';if(i<=4)return'中等';if(i<=7)return'强';if(i<=10)return'很强';return'极强';
+    }
+
+    // 穿衣建议
+    function getClothingAdvice(temp) {
+      if(temp>=35)return'轻薄短袖 · 注意防晒';
+      if(temp>=28)return'短袖短裤 · 凉爽舒适';
+      if(temp>=22)return'薄长袖或短袖 · 可备薄外套';
+      if(temp>=15)return'卫衣或薄外套 · 舒适温度';
+      if(temp>=8)return'厚外套或毛衣 · 早晚微凉';
+      if(temp>=0)return'羽绒服或棉衣 · 注意保暖';
+      return'厚羽绒服 · 围巾手套 · 寒风凛冽';
+    }
+
+    // 月相计算
+    function getMoonPhase(date) {
+      const lp=2551443;
+      const nm=new Date(2024,0,11,11,57);
+      const diff=date.getTime()-nm.getTime();
+      const days=diff/86400000;
+      let phase=((days%29.53058867)+29.53058867)%29.53058867;
+      const phases=[
+        {max:1.84566,name:'🌑 新月'},{max:5.53699,name:'🌒 蛾眉月'},
+        {max:9.22831,name:'🌓 上弦月'},{max:12.91963,name:'🌔 盈凸月'},
+        {max:16.61096,name:'🌕 满月'},{max:20.30228,name:'🌖 亏凸月'},
+        {max:23.99361,name:'🌗 下弦月'},{max:27.68493,name:'🌘 残月'},
+        {max:29.53059,name:'🌑 新月'}
+      ];
+      for(let p of phases){if(phase<=p.max)return p.name;}
+      return'🌑 新月';
+    }
+
+    function getNextSolarTerm(date) {
+      const y=date.getFullYear();
+      const terms=[{n:'小寒',m:0,d:5},{n:'大寒',m:0,d:20},{n:'立春',m:1,d:4},{n:'雨水',m:1,d:19},{n:'惊蛰',m:2,d:6},{n:'春分',m:2,d:21},{n:'清明',m:3,d:5},{n:'谷雨',m:3,d:20},{n:'立夏',m:4,d:6},{n:'小满',m:4,d:21},{n:'芒种',m:5,d:6},{n:'夏至',m:5,d:21},{n:'小暑',m:6,d:7},{n:'大暑',m:6,d:23},{n:'立秋',m:7,d:8},{n:'处暑',m:7,d:23},{n:'白露',m:8,d:8},{n:'秋分',m:8,d:23},{n:'寒露',m:9,d:8},{n:'霜降',m:9,d:24},{n:'立冬',m:10,d:8},{n:'小雪',m:10,d:22},{n:'大雪',m:11,d:7},{n:'冬至',m:11,d:22}];
+      const t=new Date(y,date.getMonth(),date.getDate());
+      let nt=terms[0].n,md=Infinity;
+      for(let tr of terms){
+        let td=new Date(y,tr.m,tr.d);
+        let d=td-t;
+        if(d<0)d=new Date(y+1,tr.m,tr.d)-t;
+        if(d>=0&&d<md){md=d;nt=tr.n;}
+      }
+      return nt;
+    }
+
+    async function fetchWeather() {
+      try {
+        document.getElementById('cityName').textContent=CITY_NAME;
+
+        const url=`https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=Asia/Shanghai&past_days=1&forecast_days=8`;
+
+        const resp=await fetch(url);
+        const data=await resp.json();
+
+        const ct=Math.round(data.current.temperature_2m);
+        const cc=data.current.weather_code;
+        const ch=data.current.relative_humidity_2m;
+        const cws=data.current.wind_speed_10m;
+        const cwd=data.current.wind_direction_10m||0;
+        const cfl=Math.round(data.current.apparent_temperature||ct);
+        const cuv=Math.round(data.current.uv_index||0);
+
+        document.getElementById('currentTemp').textContent=`${ct}°`;
+        document.getElementById('weatherEmoji').textContent=getWeatherEmoji(cc);
+        document.getElementById('conditionText').textContent=getWeatherText(cc);
+        document.getElementById('feelsLike').textContent=`${cfl}°`;
+        document.getElementById('humidity').textContent=`${ch}%`;
+        document.getElementById('windInfo').textContent=`${getWindDirection(cwd)} ${getWindLevel(cws)}级`;
+        document.getElementById('uvIndex').textContent=getUVDesc(cuv);
+
+        // 日出日落
+        const sr=data.daily.sunrise[1];
+        const ss=data.daily.sunset[1];
+        document.getElementById('sunriseTime').textContent=sr?.split('T')[1]?.substring(0,5)||'--:--';
+        document.getElementById('sunsetTime').textContent=ss?.split('T')[1]?.substring(0,5)||'--:--';
+
+        // 天气对比
+        const ymx=Math.round(data.daily.temperature_2m_max[0]);
+        const ymn=Math.round(data.daily.temperature_2m_min[0]);
+        const yc=data.daily.weather_code[0];
+        const tmx=Math.round(data.daily.temperature_2m_max[1]);
+        const tmn=Math.round(data.daily.temperature_2m_min[1]);
+        const tc=data.daily.weather_code[1];
+        const wmx=Math.round(data.daily.temperature_2m_max[2]);
+        const wmn=Math.round(data.daily.temperature_2m_min[2]);
+        const wc=data.daily.weather_code[2];
+
+        document.getElementById('yesterdayEmoji').textContent=getWeatherEmoji(yc);
+        document.getElementById('yesterdayCondition').textContent=getWeatherText(yc);
+        document.getElementById('yesterdayHigh').textContent=`${ymx}°`;
+        document.getElementById('yesterdayLow').textContent=`${ymn}°`;
+        document.getElementById('todayEmoji1').textContent=getWeatherEmoji(tc);
+        document.getElementById('todayCondition1').textContent=getWeatherText(tc);
+        document.getElementById('todayHigh1').textContent=`${tmx}°`;
+        document.getElementById('todayLow1').textContent=`${tmn}°`;
+        document.getElementById('todayEmoji2').textContent=getWeatherEmoji(tc);
+        document.getElementById('todayCondition2').textContent=getWeatherText(tc);
+        document.getElementById('todayHigh2').textContent=`${tmx}°`;
+        document.getElementById('todayLow2').textContent=`${tmn}°`;
+        document.getElementById('tomorrowEmoji').textContent=getWeatherEmoji(wc);
+        document.getElementById('tomorrowCondition').textContent=getWeatherText(wc);
+        document.getElementById('tomorrowHigh').textContent=`${wmx}°`;
+        document.getElementById('tomorrowLow').textContent=`${wmn}°`;
+
+        const d1=tmx-ymx;
+        const yv=document.getElementById('yesterdayVerdict');
+        if(d1>=2){yv.textContent=`↗ 今比昨暖 ${Math.abs(d1)}°`;yv.className='compare-verdict warmer';}
+        else if(d1<=-2){yv.textContent=`↘ 今比昨凉 ${Math.abs(d1)}°`;yv.className='compare-verdict colder';}
+        else{yv.textContent='→ 温度相仿';yv.className='compare-verdict similar';}
+
+        const d2=wmx-tmx;
+        const wv=document.getElementById('tomorrowVerdict');
+        if(d2>=2){wv.textContent=`↗ 明比今暖 ${Math.abs(d2)}°`;wv.className='compare-verdict warmer';}
+        else if(d2<=-2){wv.textContent=`↘ 明比今凉 ${Math.abs(d2)}°`;wv.className='compare-verdict colder';}
+        else{wv.textContent='→ 温度相仿';wv.className='compare-verdict similar';}
+
+        // ✨ 新增实用信息
+        document.getElementById('clothingAdvice').textContent=getClothingAdvice(ct);
+        const rainProb=data.daily.precipitation_probability_max[1]||0;
+        document.getElementById('rainChance').textContent=rainProb>0?`${rainProb}% 可能降雨`:'无降雨风险';
+        const tdiff=tmx-tmn;
+        document.getElementById('tempDiff').textContent=`${tdiff}°C${tdiff>10?' · 注意增减衣物':tdiff>6?' · 早晚微凉':''}`;
+        document.getElementById('moonPhase').textContent=getMoonPhase(new Date());
+
+        // 空气质量（基于湿度+紫外线+风速综合估算）
+        let aqiEst='良好 🟢';
+        if(ch>80||cuv>8)aqiEst='一般 🟡';
+        if(ch>90&&cws<5)aqiEst='较差 🟠';
+        document.getElementById('airQuality').textContent=`${aqiEst} (估算)`;
+
+        // 逐时
+        const hc=document.getElementById('hourlyContainer');
+        let hh='';
+        const now=new Date(),cHr=now.getHours();
+        const ht=data.hourly.time,hT=data.hourly.temperature_2m,hCd=data.hourly.weather_code;
+        const si=ht.findIndex(t=>{const d=new Date(t);return d.getHours()===cHr&&d.getDate()===now.getDate();});
+        const sH=si>=0?ht.slice(si,si+24):ht.slice(0,24);
+        const sT=si>=0?hT.slice(si,si+24):hT.slice(0,24);
+        const sC=si>=0?hCd.slice(si,si+24):hCd.slice(0,24);
+        for(let i=0;i<Math.min(sH.length,24);i++){
+          const h=new Date(sH[i]).getHours().toString().padStart(2,'0')+':00';
+          hh+=`<div class="hourly-item"><span>${h}</span><span class="emoji">${getWeatherEmoji(sC[i])}</span><span>${Math.round(sT[i])}°</span></div>`;
+        }
+        hc.innerHTML=hh;
+
+        // 未来
+        const fc=document.getElementById('forecastList');
+        let fh='';
+        const wd=['日','一','二','三','四','五','六'];
+        for(let i=1;i<Math.min(data.daily.time.length,8);i++){
+          const d=new Date(data.daily.time[i]);
+          const dn=i===1?'今天':i===2?'明天':'周'+wd[d.getDay()];
+          const ds=`${d.getMonth()+1}/${d.getDate()}`;
+          fh+=`<div class="forecast-day"><span><strong>${dn}</strong> <small>${ds}</small></span><span style="font-size:22px;">${getWeatherEmoji(data.daily.weather_code[i])}</span><span>${Math.round(data.daily.temperature_2m_max[i])}° <small style="opacity:0.5">${Math.round(data.daily.temperature_2m_min[i])}°</small></span></div>`;
+        }
+        fc.innerHTML=fh;
+
+        document.getElementById('nextFestival').textContent=getNextSolarTerm(new Date());
+
+      }catch(e){
+        console.error(e);
+        document.getElementById('conditionText').textContent='获取失败';
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click',fetchWeather);
+    fetchWeather();
+    setInterval(fetchWeather,60*60*1000);
+  </script>
 </body>
 </html>
